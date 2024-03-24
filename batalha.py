@@ -55,8 +55,8 @@ class Batalha:
 
 
 if __name__ == '__main__':
-    jogador1 = input("Digite o nome do Jogador 1: ")
-    jogador2 = input("Digite o nome do Jogador 2: ")
+    jogador1 = input("Digite o nome do Jogador 1: ").title()
+    jogador2 = input("Digite o nome do Jogador 2: ").title()
 
     batalha = Batalha(jogador1, jogador2)
     batalha.jogar()

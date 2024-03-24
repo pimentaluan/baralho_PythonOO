@@ -31,9 +31,12 @@ class Baralho:
 
     def distribuir_cartas(self, numero_jogadores):
         self.__mao = {}
-        for i in range(numero_jogadores):
-            self.__mao[f'Jogador {i+1}'] = []
-        
+        try:
+            for i in range(numero_jogadores):
+                self.__mao[f'Jogador {i+1}'] = []
+        except TypeError:
+            return 'O número de jogadores deve ser um número inteiro'
+           
         for i, carta in enumerate(self.__cartas):
             jogador_atual = i % numero_jogadores
             self.__mao[f'Jogador {jogador_atual+1}'].append(carta)
@@ -42,7 +45,10 @@ class Baralho:
 
     
     def mao_jogador(self, jogador):
-        return self.__mao[f'Jogador {jogador}']
+        try:
+            return self.__mao[f'Jogador {jogador}']
+        except KeyError:
+            return 'Jogador não encontrado'
 
 
 if __name__ == '__main__':
