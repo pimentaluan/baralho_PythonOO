@@ -1,58 +1,86 @@
-from random import randint
+from random import shuffle
+from enum import Enum
 
-class Cartas:
-    __valor = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A']
-    __naipe = ['Copas', 'Espadas', 'Ouros', 'Paus']
+class Naipe(Enum):
+    OUROS = 1
+    PAUS = 2
+    ESPADAS = 3
+    COPAS = 4
+class Carta:
+    AS = 1
+    VALETE = 11
+    DAMA = 12
+    REI = 13
+    
+    def __init__(self, numero, naipe: Naipe):
+        self.__valor = numero
+        self.__naipe = naipe
+        
 
+    def _get_valor_como_string(self):
+        return self.__valor
+    
+    def _get_naipe_como_string(self):
+        match self.__naipe:
+            case Naipe.OUROS:
+                return "Ouros"
+            case Naipe.PAUS:
+                return "Paus"
+            case Naipe.ESPADAS:
+                return "Espadas"
+            case Naipe.COPAS:
+                return "Copas"
+        
+    def __repr__(self) -> str:
+        return f'Carta ({self._get_valor_como_string()} de {self._get_naipe_como_string()})'
+
+
+
+class Baralho:
     def __init__(self):
         self.__cartas = []
-        self.gerar_cartas()
+        for naipe in Naipe:
+            for numero in range(1, 14):
+                self.__cartas.append(Carta(numero, naipe))
+                
+    @property
+    def cartas(self):
+        return self.__cartas
+
+    def embaralhar(self):
+        shuffle(self.__cartas)
+        
+    def __len__(self):
+        return len(self.__cartas)
+
+    def distribuir_cartas(self, jogadores: list):
+        total_jogadores = len(jogadores)
+        cartas_por_jogador = len(self.__cartas) // total_jogadores
+        for i, jogador in enumerate(jogadores):
+            inicio = i * cartas_por_jogador
+            fim = inicio + cartas_por_jogador
+            jogador.receber_cartas(self.__cartas[inicio: fim])
+class Jogador:
+    def __init__(self, nome):
+        self.__nome = nome
+        self.__cartas = []
 
     @property
     def cartas(self):
         return self.__cartas
 
-    def gerar_cartas(self):
-        for valor in Cartas.__valor:
-            for naipe in Cartas.__naipe:
-                self.__cartas.append([valor, naipe])
+    def receber_cartas(self, cartas: list[Carta]):
+        self.__cartas.extend(cartas)
 
-
-class Baralho:
-    def __init__(self):
-        self.__cartas = Cartas().cartas
-
-    def embaralhar(self):
-        cartas_embaralhadas = []
-        while len(self.__cartas) > 0:
-            indice_carta = randint(0, len(self.__cartas) - 1)
-            cartas_embaralhadas.append(self.__cartas.pop(indice_carta))
-        self.__cartas = cartas_embaralhadas
-
-    def distribuir_cartas(self, numero_jogadores):
-        self.__mao = {}
-        try:
-            for i in range(numero_jogadores):
-                self.__mao[f'Jogador {i+1}'] = []
-        except TypeError:
-            return 'O número de jogadores deve ser um número inteiro'
-           
-        for i, carta in enumerate(self.__cartas):
-            jogador_atual = i % numero_jogadores
-            self.__mao[f'Jogador {jogador_atual+1}'].append(carta)
-        
-        return self.__mao
-
+    def __repr__(self):
+        return f'Jogador({self.__nome})'
     
-    def mao_jogador(self, jogador):
-        try:
-            return self.__mao[f'Jogador {jogador}']
-        except KeyError:
-            return 'Jogador não encontrado'
-
 
 if __name__ == '__main__':
     baralho = Baralho()
     baralho.embaralhar()
-    baralho.distribuir_cartas(2)
-    print(baralho.mao_jogador(1))
+    jogador1 = Jogador('Luan')
+    jogador2 = Jogador('Luca')
+    baralho.distribuir_cartas([jogador1, jogador2])
+    print(jogador1.cartas)
+    print(jogador2.cartas)
